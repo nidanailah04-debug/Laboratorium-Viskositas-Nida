@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10243b">
+<title>Laboratorium Virtual Viskositas</title>
+<style>
+:root{--ink:#14283d;--muted:#63758a;--bg:#f3f7fb;--card:#fff;--blue:#2563eb;--line:#dce6ef;--shadow:0 12px 32px rgba(22,48,76,.09)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55}
+button,select{font:inherit}button{cursor:pointer;touch-action:manipulation}
+.hero{background:radial-gradient(circle at 85% 15%,#315e8c 0,transparent 32%),linear-gradient(120deg,#10243b,#193e5c);color:white;padding:42px 20px 34px}
+.wrap{width:min(1120px,calc(100% - 32px));margin:auto}.eyebrow{font-size:.78rem;letter-spacing:.13em;text-transform:uppercase;color:#a9d5ff;font-weight:800}.hero h1{font-size:clamp(2rem,5vw,3.3rem);line-height:1.1;margin:10px 0}.hero p{max-width:720px;color:#d7e8f6;margin:12px 0 0;font-size:1.05rem}
+nav{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0 0}.tab{border:1px solid #ffffff55;background:#ffffff12;color:white;padding:11px 17px;border-radius:12px;font-weight:700}.tab[aria-selected=true]{background:white;color:#153653}
+main{padding:26px 0 56px}.panel{display:none}.panel.active{display:block}.section-head{display:flex;justify-content:space-between;gap:18px;align-items:end;margin:8px 0 18px}.section-head h2{font-size:clamp(1.45rem,3vw,2rem);margin:0}.section-head p{color:var(--muted);margin:4px 0 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:16px 0}.btn{border:0;border-radius:12px;padding:12px 18px;min-height:46px;font-weight:800;background:var(--blue);color:white}.btn.secondary{background:#e8f0fb;color:#19456f}.btn.dark{background:#18344f}.btn:disabled{opacity:.45;cursor:not-allowed}
+.status{color:var(--muted);font-size:.92rem}.tube-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}.tube-card{padding:14px 10px;text-align:center;min-width:0}.tube-card h3{font-size:1rem;margin:4px 0}.tube-card .kind{font-size:.78rem;color:var(--muted);min-height:38px}
+.tube{height:260px;width:min(100%,112px);margin:12px auto 10px;position:relative;border:3px solid #a9bdce;border-top:0;border-radius:0 0 20px 20px;background:linear-gradient(90deg,#ffffff90,#ffffff12 35%,#ffffff65 75%,#ffffff20);overflow:hidden;box-shadow:inset 5px 0 9px #fff8,inset -5px 0 8px #7893a522}
+.liquid{position:absolute;inset:0 0 0;background:var(--liquid);opacity:.68;border-radius:0 0 15px 15px}
+.tube:before{content:"";position:absolute;z-index:3;left:9px;top:0;bottom:8px;width:5px;background:#ffffff70;border-radius:8px}
+.ball{position:absolute;z-index:4;left:50%;top:10px;transform:translateX(-50%);width:19px;height:19px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#fff,#a9b9c8 40%,#536577 82%);box-shadow:0 2px 5px #14283d70}
+.ball.moving{transition:none}.tube-label{font-size:.8rem;color:var(--muted)}
+.stopwatch{font-variant-numeric:tabular-nums;font-size:1.08rem;font-weight:850;color:#163d62;margin:6px 0}
+.result-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.94rem}.result-table th,.result-table td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:left}.result-table th{background:#f2f6fb;color:#3b536a}
+.note{padding:13px 15px;background:#edf6ff;border-left:4px solid #4c91d8;border-radius:10px;color:#294b6b;font-size:.92rem;margin-top:15px}
+.flow-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:13px}.flow-card{padding:14px;min-width:0}.flow-card h3{font-size:1rem;margin:0}.flow-card .visc{font-size:.8rem;color:var(--muted);margin:2px 0 10px}
+.pipe{height:74px;border:3px solid #a9bdce;border-radius:13px;background:linear-gradient(#ffffffa8,#e7f3fc99);position:relative;overflow:hidden;margin:10px 0 12px}
+.stream{position:absolute;left:-20%;top:25px;height:19px;width:140%;border-radius:20px;background:var(--liquid);opacity:.72}
+.particle{position:absolute;top:28px;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid #52738e;box-shadow:0 0 5px #fff;animation:flow var(--duration,2s) linear infinite}
+@keyframes flow{from{transform:translateX(-20px)}to{transform:translateX(250px)}}
+.flow-speed{font-weight:850;color:#164d78;font-size:.94rem}.flow-meta{font-size:.8rem;color:var(--muted)}
+.controls{display:flex;gap:14px;flex-wrap:wrap;align-items:center}.controls label{font-weight:750}.controls select{padding:10px 14px;border:1px solid #bdcddd;border-radius:10px;background:white;min-height:44px}
+.info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:22px}.info-grid h3{margin:0 0 7px}.info-grid p{margin:0;color:#52677c}
+footer{text-align:center;color:var(--muted);padding:20px;font-size:.85rem}
+@media(max-width:850px){.tube-grid,.flow-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:560px){.wrap{width:min(100% - 22px,1120px)}.hero{padding:32px 0 27px}.tube-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.flow-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.card{padding:14px}.tube{height:225px}.section-head{display:block}.result-table{font-size:.83rem}.result-table th,.result-table td{padding:9px 6px}.info-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="hero">
+ <div class="wrap">
+  <div class="eyebrow">Fisika SMA · Eksperimen interaktif</div>
+  <h1>Laboratorium Virtual Viskositas</h1>
+  <p>Mengamati Pengaruh Kekentalan Zat Cair terhadap Kecepatan Gerak dan Alirannya.</p>
+  <nav aria-label="Menu percobaan">
+   <button class="tab" data-tab="jatuh" aria-selected="true">1. Bola Jatuh</button>
+   <button class="tab" data-tab="aliran" aria-selected="false">2. Kecepatan Aliran</button>
+   <button class="tab" data-tab="belajar" aria-selected="false">Materi Singkat</button>
+  </nav>
+ </div>
+</header>
+<main class="wrap">
+<section id="jatuh" class="panel active">
+ <div class="section-head"><div><h2>Percobaan 1 · Bola Jatuh dalam Zat Cair</h2><p>Amati bola yang dijatuhkan satu per satu ke dalam lima cairan.</p></div></div>
+ <div class="card">
+  <div class="toolbar">
+   <button class="btn" id="startFall">▶ Mulai Percobaan</button>
+   <button class="btn secondary" id="pauseFall" disabled>Ⅱ Jeda</button>
+   <button class="btn secondary" id="resetFall">↻ Ulangi Percobaan</button>
+   <span class="status" id="fallStatus" aria-live="polite">Siap melakukan percobaan.</span>
+  </div>
+  <div class="tube-grid" id="tubeGrid"></div>
+  <div class="note">Waktu diukur langsung dari saat bola mulai bergerak hingga mencapai dasar tabung. Cairan memiliki nilai viskositas tetap dalam model simulasi; siswa tidak perlu memasukkan nilainya.</div>
+  <h3>Hasil pengamatan</h3>
+  <div style="overflow-x:auto"><table class="result-table"><thead><tr><th>Cairan</th><th>Tingkat kekentalan</th><th>Waktu jatuh</th><th>Status</th></tr></thead><tbody id="fallResults"><tr><td colspan="4">Hasil akan muncul setelah percobaan selesai.</td></tr></tbody></table></div>
+ </div>
+</section>
+<section id="aliran" class="panel">
+ <div class="section-head"><div><h2>Percobaan 2 · Kecepatan Aliran Zat Cair</h2><p>Bandingkan laju aliran pada tekanan dorong yang berbeda.</p></div></div>
+ <div class="card">
+  <div class="controls">
+   <label for="pressure">Tekanan dorong:</label>
+   <select id="pressure"><option value="0.65">Rendah</option><option value="1" selected>Sedang</option><option value="1.5">Tinggi</option></select>
+   <span class="status" id="pressureText">Tekanan sedang dipilih.</span>
+  </div>
+  <div class="flow-grid" id="flowGrid" style="margin-top:18px"></div>
+  <div class="note">Animasi partikel di dalam pipa menunjukkan perbandingan laju aliran secara kualitatif. Tekanan yang lebih besar mempercepat aliran, sedangkan viskositas yang lebih besar memperlambatnya.</div>
+  <h3>Data perbandingan aliran</h3>
+  <div style="overflow-x:auto"><table class="result-table"><thead><tr><th>Cairan</th><th>Kekentalan</th><th>Kecepatan relatif</th></tr></thead><tbody id="flowResults"></tbody></table></div>
+ </div>
+</section>
+<section id="belajar" class="panel">
+ <div class="section-head"><div><h2>Mengenal Viskositas</h2><p>Konsep dasar untuk membantu membaca hasil simulasi.</p></div></div>
+ <div class="info-grid">
+  <article class="card"><h3>Apa itu viskositas?</h3><p>Viskositas adalah ukuran hambatan internal dalam zat cair ketika lapisan-lapisan cairan bergerak atau mengalir. Semakin besar viskositas, semakin sulit cairan mengalir.</p></article>
+  <article class="card"><h3>Zat cair encer dan kental</h3><p>Zat cair encer, seperti air, memiliki viskositas relatif rendah sehingga mudah mengalir. Zat cair kental, seperti madu, memiliki viskositas relatif tinggi sehingga mengalir lebih lambat.</p></article>
+  <article class="card"><h3>Bola di dalam zat cair</h3><p>Ketika bola bergerak di dalam cairan, cairan memberikan gaya hambat. Dalam kondisi dan ukuran bola yang sama, viskositas yang lebih tinggi menghasilkan hambatan lebih besar sehingga bola cenderung jatuh lebih lambat.</p></article>
+  <article class="card"><h3>Kecepatan aliran</h3><p>Pada dorongan atau tekanan yang sama, cairan dengan viskositas rendah mengalir lebih cepat. Cairan yang lebih kental mengalami hambatan internal lebih besar sehingga laju alirannya lebih rendah.</p></article>
+ </div>
+ <div class="card" style="margin-top:14px"><h3>Kesimpulan</h3><p>Semakin tinggi viskositas, semakin besar hambatan internal zat cair terhadap gerak dan alirannya. Akibatnya, bola bergerak lebih lambat di dalam cairan dan cairan mengalir lebih lambat melalui pipa jika kondisi lain dibuat sama.</p><p class="status">Catatan: angka waktu dan kecepatan pada laboratorium virtual ini merupakan hasil model pembelajaran sederhana, bukan data pengukuran laboratorium nyata. Nilai viskositas zat sehari-hari dapat berubah karena suhu dan komposisinya.</p></div>
+</section>
+</main>
+<footer>Laboratorium Virtual Fisika · Simulasi pembelajaran viskositas zat cair</footer>
+<script>
+"use strict";
+const liquids=[
+ {name:"Air",level:"Sangat encer",mu:1,color:"#55bce8",fall:1.05},
+ {name:"Minyak goreng",level:"Encer",mu:65,color:"#e9c64d",fall:2.35},
+ {name:"Sampo",level:"Kental",mu:900,color:"#b77be5",fall:4.7},
+ {name:"Sirup",level:"Sangat kental",mu:1800,color:"#e66b72",fall:7.0},
+ {name:"Madu",level:"Paling kental",mu:10000,color:"#d99426",fall:10.5}
+];
+const $=s=>document.querySelector(s);
+let raf=null, running=false, paused=false, sequence=0, current=null, startAt=0, elapsedBeforePause=0, fallData=liquids.map(()=>null);
+const grid=$("#tubeGrid");
+function buildTubes(){
+ grid.innerHTML="";
+ liquids.forEach((l,i)=>{
+  const c=document.createElement("article");c.className="card tube-card";
+  c.innerHTML=`<h3>${l.name}</h3><div class="kind">${l.level}</div><div class="tube" style="--liquid:${l.color}"><div class="liquid"></div><div class="ball" id="ball${i}"></div></div><div class="tube-label">Stopwatch</div><div class="stopwatch" id="watch${i}">00.00 s</div>`;
+  grid.append(c);
+ });
+}
+function renderFallTable(){
+ const body=$("#fallResults");
+ if(!fallData.some(v=>v!==null)){body.innerHTML='<tr><td colspan="4">Hasil akan muncul setelah percobaan selesai.</td></tr>';return}
+ body.innerHTML=liquids.map((l,i)=>`<tr><td>${l.name}</td><td>${l.level}</td><td>${fallData[i]===null?"—":fallData[i].toFixed(2)+" s"}</td><td>${fallData[i]===null?"Menunggu":"Selesai"}</td></tr>`).join("");
+}
+function resetFall(){
+ if(raf)cancelAnimationFrame(raf);raf=null;running=false;paused=false;sequence=0;current=null;elapsedBeforePause=0;fallData=liquids.map(()=>null);
+ liquids.forEach((l,i)=>{$("#ball"+i).style.top="10px";$("#watch"+i).textContent="00.00 s";});
+ $("#startFall").disabled=false;$("#pauseFall").disabled=true;$("#pauseFall").textContent="Ⅱ Jeda";$("#fallStatus").textContent="Siap melakukan percobaan.";renderFallTable();
+}
+function beginNext(){
+ if(sequence>=liquids.length){running=false;current=null;$("#startFall").disabled=false;$("#pauseFall").disabled=true;$("#fallStatus").textContent="Semua percobaan selesai. Bandingkan hasil pada tabel.";renderFallTable();return}
+ current=sequence;const l=liquids[current],ball=$("#ball"+current),tube=ball.parentElement;
+ const distance=tube.clientHeight-42;
+ // Kecepatan model sengaja dibuat berbeda jelas; waktu aktual dihitung dari durasi animasi.
+ const duration=l.fall*1000;
+ startAt=performance.now();elapsedBeforePause=0;running=true;
+ $("#fallStatus").textContent=`Bola pada ${l.name} sedang bergerak…`;
+ $("#pauseFall").disabled=false;
+ function frame(now){
+  if(!running||paused)return;
+  const elapsed=now-startAt+elapsedBeforePause;
+  const progress=Math.min(elapsed/duration,1);
+  ball.style.top=(10+distance*progress)+"px";
+  $("#watch"+current).textContent=(elapsed/1000).toFixed(2)+" s";
+  if(progress>=1){
+   fallData[current]=elapsed/1000;$("#watch"+current).textContent=fallData[current].toFixed(2)+" s";
+   renderFallTable();running=false;$("#pauseFall").disabled=true;sequence++;setTimeout(()=>{if(!paused)beginNext()},500);return;
+  }
+  raf=requestAnimationFrame(frame);
+ }
+ raf=requestAnimationFrame(frame);
+}
+$("#startFall").addEventListener("click",()=>{if(sequence===0&&fallData.every(v=>v===null)){$("#startFall").disabled=true;beginNext()}else if(!running&&sequence<liquids.length){$("#startFall").disabled=true;beginNext()}});
+$("#pauseFall").addEventListener("click",()=>{
+ if(running){paused=true;running=false;cancelAnimationFrame(raf);elapsedBeforePause=performance.now()-startAt+elapsedBeforePause;$("#pauseFall").textContent="▶ Lanjutkan";$("#fallStatus").textContent="Percobaan dijeda."}
+ else if(paused){paused=false;$("#pauseFall").textContent="Ⅱ Jeda";startAt=performance.now();beginResume()}
+});
+function beginResume(){
+ const i=current,l=liquids[i],ball=$("#ball"+i),tube=ball.parentElement,distance=tube.clientHeight-42,duration=l.fall*1000;
+ const already=elapsedBeforePause;startAt=performance.now();running=true;
+ function frame(now){if(!running||paused)return;const elapsed=already+(now-startAt),p=Math.min(elapsed/duration,1);ball.style.top=(10+distance*p)+"px";$("#watch"+i).textContent=(elapsed/1000).toFixed(2)+" s";
+  if(p>=1){fallData[i]=elapsed/1000;$("#watch"+i).textContent=fallData[i].toFixed(2)+" s";renderFallTable();running=false;$("#pauseFall").disabled=true;sequence++;elapsedBeforePause=0;setTimeout(()=>{if(!paused)beginNext()},500);return}
+  raf=requestAnimationFrame(frame)}
+ raf=requestAnimationFrame(frame);
+}
+$("#resetFall").addEventListener("click",resetFall);
+function buildFlow(){
+ const pressure=Number($("#pressure").value),labels={0.65:"Rendah",1:"Sedang",1.5:"Tinggi"};
+ $("#pressureText").textContent=`Tekanan ${labels[pressure].toLowerCase()} dipilih.`;
+ const flow=$("#flowGrid"),rows=$("#flowResults");flow.innerHTML="";rows.innerHTML="";
+ liquids.forEach((l,i)=>{
+  const relative=pressure*100/Math.sqrt(l.mu);
+  // Durasi animasi lebih pendek = partikel bergerak lebih cepat.
+  const duration=Math.max(.65,5.4/relative);
+  const c=document.createElement("article");c.className="card flow-card";
+  c.innerHTML=`<h3>${l.name}</h3><div class="visc">${l.level}</div><div class="pipe" style="--liquid:${l.color}"><div class="stream"></div>${[0,1,2,3].map(n=>`<span class="particle" style="left:${n*27}%;animation-duration:${duration}s;animation-delay:${-n*duration/4}s"></span>`).join("")}</div><div class="flow-speed">Laju relatif: ${relative.toFixed(2)}</div><div class="flow-meta">Tekanan: ${labels[pressure]}</div>`;
+  flow.append(c);
+  rows.insertAdjacentHTML("beforeend",`<tr><td>${l.name}</td><td>${l.level}</td><td>${relative.toFixed(2)} (relatif)</td></tr>`);
+ });
+}
+document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>{
+ document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",String(b===btn)));
+ document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id===btn.dataset.tab));
+}));
+$("#pressure").addEventListener("change",buildFlow);
+buildTubes();renderFallTable();buildFlow();
+</script>
+</body>
+</html>
